@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.icestormikk"
-version = "1.0-SNAPSHOT"
+version = "1.2"
 
 repositories {
     mavenCentral()
