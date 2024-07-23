@@ -21,7 +21,7 @@ public class FilesHelper {
             Path path = Path.of(directoryPath);
             return Files.walk(path).filter(Files::isRegularFile);
         } catch (IOException e) {
-            System.err.println("Возникла непредвиденная ошибка во время обхода файлов: " + e.getMessage());
+            System.err.println("An unexpected error occurred while crawling files: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -38,11 +38,11 @@ public class FilesHelper {
                 onLineTransform.accept(currLine);
             }
         } catch (FileNotFoundException e) {
-            System.err.println("Не удалось найти указаннйы файл: " + e.getMessage());
+            System.err.println("The specified file could not be found: " + e.getMessage());
         } catch (InvalidPathException e) {
-            System.err.println("Не удалось правильно обработать путь (" + e.getMessage() + ")");
+            System.err.println("The path could not be processed correctly (" + e.getMessage() + ")");
         } catch (IOException e) {
-            System.err.println("Произошла непредвиденная ошибка во время чтения файла: " + e.getMessage());
+            System.err.println("An unexpected error occurred while reading the file: " + e.getMessage());
         }
     }
 
@@ -56,7 +56,7 @@ public class FilesHelper {
             writer.write(content);
             writer.flush();
         } catch (IOException e) {
-            System.err.println("Возникла непредвиденная ошибка во время записи в файл: " + e.getMessage());
+            System.err.println("An unexpected error occurred while writing to the file: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

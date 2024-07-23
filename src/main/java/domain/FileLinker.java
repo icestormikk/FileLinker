@@ -40,6 +40,7 @@ public record FileLinker(String directoryPath) {
             var concatenatedFiles = concatenateFiles(sortedFiles);
             // строим путь до файла с результатом
             Path resultFilepath = Path.of(directoryPath, "result.txt");
+            System.out.println("The result of the program is written to a file" + resultFilepath.toAbsolutePath());
             // записываем результат в файл
             FilesHelper.writeToFile(resultFilepath.toString(), concatenatedFiles);
         } catch (CircularRequireException e) {
@@ -165,7 +166,7 @@ public record FileLinker(String directoryPath) {
                     Files.readString(file, StandardCharsets.UTF_8)
                 ).append("\n");
             } catch (IOException e) {
-                System.err.println("Возникла непредвиденная ошибка во время объединения файлов: " + e.getMessage());
+                System.err.println("An unexpected error occurred while merging files: " + e.getMessage());
                 throw new RuntimeException(e);
             }
         }
