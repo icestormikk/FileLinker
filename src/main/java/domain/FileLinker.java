@@ -134,6 +134,23 @@ public record FileLinker(String directoryPath) {
 
         return result;
     }
+    private List<Path> findCycle(Set<Path> visitedPaths) {
+        Set<Path> visitedStack = new HashSet<>();
+        List<Path> result = new ArrayList<>();
+
+        for (var file : filesDependencies.keySet()) {
+            if (visitedPaths.contains(file)) {
+                continue;
+            }
+
+            if (GraphHelper.dfs(file, filesDependencies, visitedPaths, visitedStack, result)) {
+                return result.reversed();
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
         }
 
         return builder.toString();
