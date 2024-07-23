@@ -151,6 +151,17 @@ public record FileLinker(String directoryPath) {
         return Collections.emptyList();
     }
 
+    private String concatenateFiles(List<Path> files) {
+        StringBuilder builder = new StringBuilder();
+        for (Path file: files) {
+            try {
+                builder.append(
+                    Files.readString(file, StandardCharsets.UTF_8)
+                ).append("\n");
+            } catch (IOException e) {
+                System.err.println("Возникла непредвиденная ошибка во время объединения файлов: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
 
         return builder.toString();
