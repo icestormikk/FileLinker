@@ -40,7 +40,7 @@ public record FileLinker(String directoryPath) {
             var concatenatedFiles = concatenateFiles(sortedFiles);
             // строим путь до файла с результатом
             Path resultFilepath = Path.of(directoryPath, "result.txt");
-            System.out.println("The result of the program is written to a file" + resultFilepath.toAbsolutePath());
+            System.out.println("The result of the program is written to a file " + resultFilepath.toAbsolutePath());
             // записываем результат в файл
             FilesHelper.writeToFile(resultFilepath.toString(), concatenatedFiles);
         } catch (CircularRequireException e) {
