@@ -8,6 +8,6 @@ import java.util.List;
  */
 public class CircularRequireException extends Throwable {
     public CircularRequireException(List<Path> cycle) {
-        super("Обнаружена циклическая зависимость: " + cycle);
+        super("A cyclic dependence has been discovered: " + cycle);
     }
 }
