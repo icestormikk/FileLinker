@@ -60,23 +60,18 @@ public record FileLinker(String directoryPath) {
                 return;
             }
 
-                Path requiredFilepath = Path.of(directoryPath, currLine.replaceFirst("require\\s+", ""));
-                fileDependencies.add(requiredFilepath);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
             Path requiredFilepath = Path.of(directoryPath, line.replaceFirst("require\\s+", ""));
             fileDependencies.add(requiredFilepath);
         });
 
         return fileDependencies;
     }
-            Path requiredFilepath = Path.of(directoryPath, line.replaceFirst("require\\s+", ""));
-            fileDependencies.add(requiredFilepath);
-        });
 
-        return fileDependencies;
-    }
+    /**
+     * Сортировка файлов в зависимости от имеющихся у них зависимостей
+     * @return Список файлов, отсортированных по возрастанию кол-ва зависимостей
+     * @throws CircularRequireException Если была обнаружена циклическая зависимость
+     */
     private List<Path> sortFilesByDependencies() throws CircularRequireException {
         // результирующий список
         List<Path> result = new ArrayList<>();
@@ -134,6 +129,12 @@ public record FileLinker(String directoryPath) {
 
         return result;
     }
+
+    /**
+     * Поиск цикла в "графе зависимостей" файлов
+     * @param visitedPaths Список посещённых файлов
+     * @return Список файлов, инструкции require которых создают циклический импорт
+     */
     private List<Path> findCycle(Set<Path> visitedPaths) {
         Set<Path> visitedStack = new HashSet<>();
         List<Path> result = new ArrayList<>();
@@ -151,6 +152,11 @@ public record FileLinker(String directoryPath) {
         return Collections.emptyList();
     }
 
+    /**
+     * Функция для конкатенации списка файлов
+     * @param files Файлы, содержимое которых надо соединить
+     * @return Строка, представляющее собой объединение содержимого всех переданных файлов
+     */
     private String concatenateFiles(List<Path> files) {
         StringBuilder builder = new StringBuilder();
         for (Path file: files) {
