@@ -1,12 +1,14 @@
 package domain;
 
-import domain.utils.FilesHelper;
+import domain.exceptions.CircularRequireException;
+import utils.FilesHelper;
+import utils.GraphHelper;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public record FileLinker(String directoryPath) {
@@ -26,20 +28,24 @@ public record FileLinker(String directoryPath) {
     private List<Path> getRequiredFiles(File file) {
         List<Path> fileDependencies = new ArrayList<>();
 
-        try (FileReader fileReader = new FileReader(file); BufferedReader reader = new BufferedReader(fileReader)) {
-            String currLine;
-            while ((currLine = reader.readLine()) != null) {
-                if (!currLine.matches("require\\s+.+")) {
-                    continue;
-                }
+        FilesHelper.readFileByLine(file.getAbsolutePath(), (line) -> {
+            if (!line.matches("require\\s+.+")) {
+                return;
+            }
 
                 Path requiredFilepath = Path.of(directoryPath, currLine.replaceFirst("require\\s+", ""));
                 fileDependencies.add(requiredFilepath);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+            Path requiredFilepath = Path.of(directoryPath, line.replaceFirst("require\\s+", ""));
+            fileDependencies.add(requiredFilepath);
+        });
 
         return fileDependencies;
+    }
+        }
+
+        return builder.toString();
     }
 }
