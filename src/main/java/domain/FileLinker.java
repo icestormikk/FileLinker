@@ -77,6 +77,63 @@ public record FileLinker(String directoryPath) {
 
         return fileDependencies;
     }
+    private List<Path> sortFilesByDependencies() throws CircularRequireException {
+        // результирующий список
+        List<Path> result = new ArrayList<>();
+
+        // набор пар "файл" - "степень входа файла"
+        Map<Path, Integer> degrees = new HashMap<>();
+        for (var file: filesDependencies.keySet()) {
+            // инициализируем степень входа для каждого файла нулём
+            degrees.put(file, 0);
+        }
+
+        // Проходимся по зависимостям файла и для каждой из них увеличиваем степень входа
+        for (var dependencies: filesDependencies.values()) {
+            for (Path dependency: dependencies) {
+                degrees.put(dependency, degrees.get(dependency) + 1);
+            }
+        }
+
+        // создаём очередь для хранения узлов с нулёвой степенью входа
+        Queue<Path> queue = new LinkedList<>();
+        // набор уже посещённых вершин
+        Set<Path> visitedPaths = new HashSet<>();
+        // добавляем в очередб узлы с нулёвой степенью входа
+        for (var entry: degrees.entrySet()) {
+            if (entry.getValue() == 0) {
+                queue.add(entry.getKey());
+            }
+        }
+
+        // пока очередь не опустеет
+        while (!queue.isEmpty()) {
+            // получаем узел со степенью входа 0
+            Path currentPath = queue.poll();
+            // добавляем его в результирующий список
+            result.addFirst(currentPath);
+            // и в список посещённых вершин
+            visitedPaths.add(currentPath);
+            // для каждого из файлов, от которых зависит текущий файл
+            for (var dependency: filesDependencies.get(currentPath)) {
+                // уменьшаем степень вход на 1
+                degrees.put(dependency, degrees.get(dependency) - 1);
+                // и как только она будет равна 0, добавляем в очередь
+                if (degrees.get(dependency) == 0) {
+                    queue.add(dependency);
+                }
+            }
+        }
+
+        // если количество отсортированных файлов меньше количества всех файлов, значит, есть цикл
+        if (result.size() != filesDependencies.size()) {
+            // находим этот цикл
+            List<Path> cycle = findCycle(visitedPaths);
+            throw new CircularRequireException(cycle);
+        }
+
+        return result;
+    }
         }
 
         return builder.toString();
